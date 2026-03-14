@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center h-screen">
+
+  <div class="bg-white p-8 rounded shadow-lg w-96">
+    <h2 class="text-2xl font-bold text-center mb-4">AgroAI Admin Login</h2>
+
+    <input id="username" type="text" placeholder="Username" class="w-full p-2 border rounded mb-3">
+
+    <input id="password" type="password" placeholder="Password" class="w-full p-2 border rounded mb-4">
+
+    <button onclick="loginAdmin()" class="w-full bg-green-600 text-white p-2 rounded">
+      Login
+    </button>
+
+    <p id="msg" class="text-red-500 mt-2 text-center"></p>
+  </div>
+
+  <script>
+    async function loginAdmin() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const msg = document.getElementById("msg");
+
+      const res = await fetch("/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",   // VERY IMPORTANT
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.href = "admin.html";
+      } else {
+        msg.innerText = "Invalid username or password";
+      }
+    }
+  </script>
+
+</body>
+
+</html>

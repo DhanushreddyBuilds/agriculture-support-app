@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - AgroAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .bg-farm {
+            background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 h-screen flex items-center justify-center bg-farm p-4">
+
+    <div class="glass-effect p-8 rounded-2xl shadow-2xl max-w-md w-full border border-white/60">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-green-900">Create Account</h1>
+            <p class="text-gray-600 mt-2">Join usage for better farming</p>
+        </div>
+
+        <!-- Flash Messages (Errors) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-4">
+            {% for category, message in messages %}
+            <div class="p-3 rounded-lg text-sm font-medium 
+            {{ 'bg-red-100 text-red-700' if category == 'error' else 'bg-green-100 text-green-700' }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="/register" method="POST" class="space-y-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <input type="text" name="username" required
+                    class="w-full px-4 py-3 bg-white/50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                    placeholder="Choose a username">
+            </div>
+
+            <!-- Assuming the table schema might need email, but user screenshot only showed username/password/id. 
+             If schema has email, adding it is safer. If not, it can be ignored or schema updated. 
+             Safe bet: Add column 'email' to insert query only if user table has it. 
+             Given the screenshot showing 'username', 'password', 'created_at', I will stick to Username/Password only 
+             to avoid SQL errors, or check backend implementation. -->
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input type="password" name="password" required
+                    class="w-full px-4 py-3 bg-white/50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                    placeholder="Create a password">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <input type="password" name="confirm_password" required
+                    class="w-full px-4 py-3 bg-white/50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 outline-none transition"
+                    placeholder="Repeat password">
+            </div>
+
+            <button type="submit"
+                class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition-transform transform active:scale-95">
+                Register
+            </button>
+        </form>
+
+        <div class="mt-6 text-center text-sm text-gray-600">
+            Already have an account?
+            <a href="/login" class="text-green-700 font-semibold hover:underline">Log In</a>
+        </div>
+    </div>
+
+</body>
+
+</html>

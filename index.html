@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgroAI - Smart Plant Doctor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center overflow-hidden relative selection:bg-green-200">
+
+  <!-- Background Particles Container -->
+  <div id="particles" class="absolute inset-0 pointer-events-none z-0"></div>
+
+  <!-- Main Card Container -->
+  <div id="input-card"
+    class="tilt-card relative w-[95%] h-[95vh] bg-white/40 glass-effect rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-white/60 z-10">
+
+    <!-- Header / Navigation -->
+    <div
+      class="flex flex-col md:flex-row justify-between items-center p-4 md:p-6 bg-white/60 backdrop-blur-md border-b border-white/50 z-20 gap-4 md:gap-0">
+
+      <!-- Logo area -->
+      <div class="flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <div
+          class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center text-2xl shadow-lg ring-2 ring-green-100">
+          🌾</div>
+        <div>
+          <h1
+            class="text-2xl font-bold bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent leading-tight">
+            AgroAI</h1>
+          <p class="text-xs text-gray-500 font-medium tracking-wide">SMART AGRICULTURE ASSISTANT</p>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex bg-gray-100/80 p-1.5 rounded-full shadow-inner animate-fade-in-up"
+        style="animation-delay: 0.2s;">
+        <button id="btn-doctor" onclick="switchTab('doctor')"
+          class="px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 bg-green-700 text-white shadow-md hover:shadow-lg transform active:scale-95">
+          👨‍⚕️ Plant Doctor
+        </button>
+        <button id="btn-advisor" onclick="switchTab('advisor')"
+          class="px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 text-green-800 hover:bg-white/50 transform active:scale-95">
+          🌱 Crop Advisor
+        </button>
+      </div>
+
+      <!-- User Auth (Mock) -->
+      <div class="hidden md:flex items-center gap-3 animate-fade-in-up" style="animation-delay: 0.3s;">
+        <div
+          class="w-8 h-8 rounded-full bg-gradient-to-tr from-green-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm">
+          {{ username[0].upper() if username else 'U' }}
+        </div>
+        <a href="/logout" class="text-gray-400 hover:text-red-500 transition p-2 rounded-full hover:bg-red-50"
+          title="Logout">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 01-3-3h4a3 3 0 01 3 3v1" />
+          </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- content container -->
+    <div class="flex-1 relative overflow-hidden">
+
+      <!-- ==================== VIEW: PLANT DOCTOR ==================== -->
+      <div id="view-doctor" class="absolute inset-0 flex flex-col h-full transition-opacity duration-300">
+
+        <!-- Chat History Area -->
+        <div id="chatBox" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 hide-scrollbar scroll-smooth">
+          <!-- Intro Message -->
+          <div class="flex gap-4 max-w-5xl mx-auto animate-fade-in-up">
+            <div
+              class="w-10 h-10 bg-green-600 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold shadow-md ring-4 ring-green-50/50">
+              AI</div>
+            <div
+              class="glass-effect p-5 rounded-2xl rounded-tl-none border border-white/50 text-gray-800 shadow-sm leading-relaxed">
+              <h3 class="font-bold text-green-800 mb-1">Hello! I am your Plant Doctor. 🩺</h3>
+              <p class="text-sm">Upload a photo 📸 or describe the issue (e.g., <i>"yellow spots on tomato leaves"</i>).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator will be injected here dynamically -->
+
+        <!-- Input Zone -->
+        <div
+          class="p-4 bg-white/80 backdrop-blur-lg border-t border-white/60 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] z-30">
+          <div class="max-w-6xl mx-auto flex flex-col gap-3">
+
+            <!-- Image Preview (Hidden by default) -->
+            <div id="imagePreview" class="hidden relative w-fit animate-fade-in-up">
+              <div class="relative group">
+                <img id="previewImg" src=""
+                  class="h-24 w-24 object-cover rounded-xl border-2 border-green-500 shadow-md transition-transform group-hover:scale-105">
+                <div
+                  class="absolute inset-0 bg-black/20 rounded-xl hidden group-hover:flex items-center justify-center transition-all">
+                  <span class="text-white text-xs font-bold">Image</span>
+                </div>
+              </div>
+              <button onclick="clearImage()"
+                class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md transition-transform hover:rotate-90">✕</button>
+            </div>
+
+            <!-- Input Controls -->
+            <div class="flex gap-3 items-end">
+              <!-- Image Upload Button -->
+              <label
+                class="cursor-pointer bg-white hover:bg-green-50 text-gray-500 hover:text-green-600 p-3.5 rounded-2xl transition-all shadow-sm border border-gray-200 hover:border-green-300 flex items-center justify-center group h-[3.25rem] w-[3.25rem]"
+                title="Upload Image">
+                <input type="file" id="imageInput" accept="image/*" class="hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:scale-110 transition-transform"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </label>
+
+              <!-- Text Input Wrapper -->
+              <div class="flex-1 relative">
+                <input id="userInput" type="text" placeholder="Describe your crop problem..."
+                  class="w-full h-[3.25rem] pl-5 pr-12 rounded-2xl border border-gray-200 outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent focus:shadow-lg transition-all bg-white shadow-inner text-gray-700 placeholder-gray-400 font-medium"
+                  onkeypress="if(event.key==='Enter') sendMessage()" autocomplete="off">
+
+                <!-- Mic Button inside input -->
+                <button id="voiceBtn" onclick="startVoice()"
+                  class="absolute right-3 top-2.5 p-1.5 text-gray-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Send Button -->
+              <button id="sendBtn" onclick="sendMessage()"
+                class="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white h-[3.25rem] px-6 rounded-2xl shadow-lg hover:shadow-green-200/50 hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold flex items-center gap-2 group">
+                <span class="hidden md:inline">Ask AI</span>
+                <svg xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 transform rotate-90 group-hover:translate-x-1 transition-transform" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== VIEW: CROP ADVISOR ==================== -->
+      <div id="view-advisor"
+        class="hidden absolute inset-0 flex flex-col h-full bg-slate-50 overflow-y-auto scroll-smooth pb-20">
+        <div class="max-w-7xl mx-auto w-full p-6 md:p-10">
+
+          <div class="text-center mb-10 animate-fade-in-up">
+            <h2 class="text-3xl font-bold text-gray-800 mb-3 tracking-tight">Smart Crop Advisor 🌾</h2>
+            <p class="text-gray-500 max-w-lg mx-auto">Select your soil type and current season to get scientifically
+              backed crop recommendations specific to your region.</p>
+          </div>
+
+          <!-- Input Form -->
+          <div
+            class="bg-white p-6 md:p-8 rounded-3xl shadow-xl border border-white mb-10 relative overflow-hidden animate-fade-in-up"
+            style="animation-delay: 0.1s;">
+            <!-- decorative blobb -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-green-100 rounded-full blur-3xl -mr-10 -mt-10 opacity-50">
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 relative z-10">
+
+              <!-- Soil Type Section -->
+              <div class="space-y-4">
+                <label class="flex items-center gap-2 text-gray-700 font-bold text-lg">
+                  <span class="bg-green-100 text-green-700 p-1.5 rounded-lg text-sm">Step 1</span>
+                  Select Soil
+                </label>
+                <div class="relative group">
+                  <select id="soilInput"
+                    class="w-full appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-4 px-5 pr-10 rounded-2xl leading-tight focus:outline-none focus:bg-white focus:border-green-500 focus:ring-4 focus:ring-green-50 transition-all cursor-pointer font-medium shadow-sm hover:border-green-300">
+                    <option value="" disabled selected>-- Choose Soil Type --</option>
+                    <option value="red">🔴 Red Soil (Iron Rich, Loamy)</option>
+                    <option value="black">⚫ Black Soil (Cotton, Clayey)</option>
+                    <option value="clay">🟤 Clay Soil (Water Retentive)</option>
+                    <option value="sandy">🟡 Sandy Soil (Dry, Loose)</option>
+                  </select>
+                  <div
+                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 group-hover:text-green-600 transition-colors">
+                    <svg class="fill-current h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                      <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Season Section -->
+              <div class="space-y-4">
+                <label class="flex items-center gap-2 text-gray-700 font-bold text-lg">
+                  <span class="bg-blue-100 text-blue-700 p-1.5 rounded-lg text-sm">Step 2</span>
+                  Select Season
+                </label>
+                <div class="space-y-3">
+                  <label
+                    class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-green-50 transition-colors border-gray-200 has-[:checked]:border-green-500 has-[:checked]:bg-green-50 has-[:checked]:ring-1 has-[:checked]:ring-green-500 has-[:checked]:shadow-md group">
+                    <input type="radio" name="season" value="kharif"
+                      class="form-radio text-green-600 h-5 w-5 focus:ring-green-500 transition-transform group-hover:scale-110">
+                    <div class="ml-3">
+                      <span class="block font-bold text-gray-800">🌧️ Kharif (Monsoon)</span>
+                      <span class="text-xs text-gray-500">June - October</span>
+                    </div>
+                  </label>
+                  <label
+                    class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-orange-50 transition-colors border-gray-200 has-[:checked]:border-orange-500 has-[:checked]:bg-orange-50 has-[:checked]:ring-1 has-[:checked]:ring-orange-500 has-[:checked]:shadow-md group">
+                    <input type="radio" name="season" value="rabi"
+                      class="form-radio text-orange-600 h-5 w-5 focus:ring-orange-500 transition-transform group-hover:scale-110">
+                    <div class="ml-3">
+                      <span class="block font-bold text-gray-800">❄️ Rabi (Winter)</span>
+                      <span class="text-xs text-gray-500">October - March</span>
+                    </div>
+                  </label>
+                  <label
+                    class="flex items-center p-3 border rounded-xl cursor-pointer hover:bg-yellow-50 transition-colors border-gray-200 has-[:checked]:border-yellow-500 has-[:checked]:bg-yellow-50 has-[:checked]:ring-1 has-[:checked]:ring-yellow-500 has-[:checked]:shadow-md group">
+                    <input type="radio" name="season" value="summer"
+                      class="form-radio text-yellow-600 h-5 w-5 focus:ring-yellow-500 transition-transform group-hover:scale-110">
+                    <div class="ml-3">
+                      <span class="block font-bold text-gray-800">☀️ Summer (Zaid)</span>
+                      <span class="text-xs text-gray-500">March - June</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <button onclick="getRecommendation()"
+              class="w-full mt-8 bg-green-700 hover:bg-green-800 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-green-200 hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2 text-lg">
+              <span class="animate-pulse">🔍</span> Find Suitable Crops
+            </button>
+          </div>
+
+          <!-- Results Area (Hidden Initially) -->
+          <div id="advisorResult" class="hidden transition-all duration-500">
+            <h3 class="text-xl font-bold text-gray-700 mb-6 flex items-center gap-3 animate-fade-in-up">
+              <span
+                class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-sm border border-green-200">✅</span>
+              <span>Recommendation Results</span>
+              <span class="h-px bg-gray-200 flex-1"></span>
+            </h3>
+            <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 auto-rows-fr">
+              <!-- Cards will be injected by JS here -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Initialization Script -->
+  <script src="script.js"></script>
+</body>
+
+</html>

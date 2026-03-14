@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>AgroAI Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Session check -->
+  <script>
+    fetch("/admin/check", { credentials: "include" })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.logged) {
+          window.location.href = "admin_login.html";
+        }
+      });
+  </script>
+  <style>
+    body {
+      background-image: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+    }
+
+    /* Add glass effect for containers */
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+    }
+  </style>
+</head>
+
+<body class="p-6">
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">🌾 AgroAI Admin Dashboard</h1>
+    <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
+      Logout
+    </button>
+  </div>
+
+  <!-- Analytics Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white p-4 rounded shadow">
+      <h3 class="text-gray-500">Total Chats</h3>
+      <p id="totalChats" class="text-2xl font-bold">0</p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+      <h3 class="text-gray-500">Most Asked Crop</h3>
+      <p id="topCrop" class="text-2xl font-bold">-</p>
+    </div>
+
+    <div class="bg-white p-4 rounded shadow">
+      <h3 class="text-gray-500">Most Common Issue</h3>
+      <p id="topIssue" class="text-2xl font-bold">-</p>
+    </div>
+  </div>
+
+  <!-- Chat Table -->
+  <div class="bg-white shadow rounded overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-green-600 text-white">
+        <tr>
+          <th class="p-2">ID</th>
+          <th class="p-2">User Message</th>
+          <th class="p-2">Bot Reply</th>
+        </tr>
+      </thead>
+      <tbody id="chatTable"></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function loadStats() {
+      const res = await fetch("/admin/stats", {
+        credentials: "include"
+      });
+
+      if (res.status === 401) {
+        window.location.href = "admin_login.html";
+        return;
+      }
+
+      const data = await res.json();
+      document.getElementById("totalChats").innerText = data.total_chats;
+      document.getElementById("topCrop").innerText = data.top_crop;
+      document.getElementById("topIssue").innerText = data.top_issue;
+    }
+
+    async function loadChats() {
+      const res = await fetch("/admin/chats", {
+        credentials: "include"
+      });
+
+      if (res.status === 401) {
+        window.location.href = "admin_login.html";
+        return;
+      }
+
+      const data = await res.json();
+      const table = document.getElementById("chatTable");
+      table.innerHTML = "";
+
+      data.forEach(chat => {
+        table.innerHTML += `
+      <tr class="border-b">
+        <td class="p-2">${chat.id}</td>
+        <td class="p-2">${chat.user_message}</td>
+        <td class="p-2">${chat.bot_reply}</td>
+      </tr>
+    `;
+      });
+    }
+
+    function logout() {
+      fetch("/admin/logout", {
+        credentials: "include"
+      }).then(() => {
+        window.location.href = "admin_login.html";
+      });
+    }
+
+    loadStats();
+    loadChats();
+  </script>
+
+</body>
+
+</html>
